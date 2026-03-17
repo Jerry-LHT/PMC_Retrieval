@@ -1,0 +1,36 @@
+paths:
+  raw_json_dir: /data/papers/raw
+
+postgres:
+  dsn: postgresql://pmc:pmc@postgres:5432/pmc_retrieval
+
+opensearch:
+  hosts:
+    - http://localhost:9200
+  index_name: articles_core_v2
+  index_alias: articles_current
+  verify_certs: false
+
+search:
+  default_page_size: 20
+  max_page_size: 100
+  highlight: true
+  highlight_fragment_size: 120
+  highlight_number_of_fragments: 2
+  lookup_highlight_default: false
+  pagination:
+    enabled: true
+    pit_keep_alive: 2m
+  weights:
+    title: 5
+    mesh_terms: 4
+    keywords: 3
+    abstract_text: 2
+    full_text_clean: 0
+
+ingest:
+  parse_workers: 4
+  failed_log_path: logs/ingest_failed.ndjson
+  progress_every: 5000
+  include_full_text: false
+  estimate_total_files: true

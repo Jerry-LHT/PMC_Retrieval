@@ -1,0 +1,48 @@
+services:
+  opensearch:
+    image: opensearchproject/opensearch:2.14.0
+    environment:
+      discovery.type: single-node
+      OPENSEARCH_INITIAL_ADMIN_PASSWORD: ${OPENSEARCH_INITIAL_ADMIN_PASSWORD:-PmC!Search#2026X9}
+      plugins.security.disabled: "true"
+      OPENSEARCH_JAVA_OPTS: ${OPENSEARCH_JAVA_OPTS:--Xms2g -Xmx2g}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "9200:9200"
+    volumes:
+      - opensearch_data:/usr/share/opensearch/data
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ${PG_USER:-pmc}
+      POSTGRES_PASSWORD: ${PG_PASSWORD:-pmc}
+      POSTGRES_DB: ${PG_DB:-pmc_retrieval}
+    ports:
+      - "5445:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - opensearch
+      - postgres
+    env_file:
+      - .env
+    environment:
+      OPENSEARCH_HOSTS: http://opensearch:9200
+    volumes:
+      - ./config:/app/config
+      - ${RAW_JSON_HOST_PATH:-./001549}:/data/papers/raw
+    ports:
+      - "8000:8000"
+
+volumes:
+  pg_data:
+  opensearch_data:

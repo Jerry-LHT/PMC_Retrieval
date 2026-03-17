@@ -1,0 +1,32 @@
+?start: expr
+
+?expr: or_expr
+?or_expr: and_expr
+        | or_expr OR and_expr   -> or_op
+?and_expr: not_expr
+         | and_expr AND not_expr -> and_op
+?not_expr: NOT not_expr          -> not_op
+         | atom
+
+?atom: term
+     | LPAREN expr RPAREN
+
+?term: phrase field?             -> phrase_term
+     | WORD field?               -> word_term
+
+field: LBRACK FIELD_BODY RBRACK
+
+AND: "AND"i
+OR: "OR"i
+NOT: "NOT"i
+LPAREN: "("
+RPAREN: ")"
+LBRACK: "["
+RBRACK: "]"
+phrase: ESCAPED_STRING
+WORD: /[^\s\(\)\[\]"]+/ 
+FIELD_BODY: /[^\]]+/
+
+%import common.ESCAPED_STRING
+%import common.WS
+%ignore WS

@@ -1,0 +1,46 @@
+{
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 1,
+    "refresh_interval": "1s",
+    "analysis": {
+      "normalizer": {
+        "lowercase_normalizer": {
+          "type": "custom",
+          "char_filter": [],
+          "filter": ["lowercase", "asciifolding"]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "dynamic": false,
+    "properties": {
+      "doc_id": { "type": "keyword" },
+      "pmcid": { "type": "keyword" },
+      "pmcid_numeric": { "type": "keyword" },
+      "pmid": { "type": "keyword" },
+      "title": {
+        "type": "text",
+        "fields": {
+          "keyword": { "type": "keyword", "ignore_above": 1024 }
+        }
+      },
+      "title_normalized": { "type": "keyword", "normalizer": "lowercase_normalizer" },
+      "journal": {
+        "type": "text",
+        "fields": {
+          "keyword": { "type": "keyword", "ignore_above": 512 }
+        }
+      },
+      "publication_date": { "type": "date", "format": "strict_date" },
+      "publication_type": { "type": "keyword" },
+      "abstract_text": { "type": "text" },
+      "mesh_terms_raw": { "type": "keyword" },
+      "mesh_terms_expanded": { "type": "keyword" },
+      "keywords": { "type": "keyword" },
+      "full_text_clean": { "type": "text" },
+      "source_json_path": { "type": "keyword", "ignore_above": 2048 }
+    }
+  }
+}
